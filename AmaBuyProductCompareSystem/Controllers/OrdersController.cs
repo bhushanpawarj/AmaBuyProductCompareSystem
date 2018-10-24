@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -11,9 +12,21 @@ using DevExtreme.AspNet.Mvc;
 namespace AmaBuyProductCompareSystem.Controllers {
     public class OrdersController : ApiController {
 
+
         [HttpGet]
         public HttpResponseMessage Get(DataSourceLoadOptions loadOptions) {
-            return Request.CreateResponse(DataSourceLoader.Load(SampleData.Orders, loadOptions));
+
+            
+            IEnumerable<AmazonProduct> Products = null;
+            var sql = "SELECT * FROM AmazonProducts";
+            using (var db = new ProductsDataEntities()) {
+
+                Products = db.Database.SqlQuery<AmazonProduct>(sql).ToList();
+            }
+
+            return Request.CreateResponse(DataSourceLoader.Load(Products, loadOptions));
+
+
         }
 
     }
